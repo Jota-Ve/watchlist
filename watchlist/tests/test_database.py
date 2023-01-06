@@ -73,3 +73,8 @@ class TestMoviesTable:
         title = 'TERMINATOR'
         movies = movies_table.get_movies_like_original_title(title).fetchall()
         assert movies and all(title in movie['originalTitle'].upper() for movie in movies)
+
+
+    def test_get_movies_by_year_release(self, movies_table: MoviesTable):
+        movies = movies_table.get_movies_by_year_release(1999).fetchall()
+        assert movies and all(movie['yearRelease'] == 1999 for movie in movies)
