@@ -53,4 +53,23 @@ class TestMoviesTable:
         movie = movies_table.get_movie_by_ID('000000000')
         assert movie is None
 
-    # def test_get_movies_by_primary_title(self, movies_table: MoviesTable):
+
+    def test_get_movies_by_primary_title(self, movies_table: MoviesTable):
+        title = 'ROCKY'
+        movies = movies_table.get_movies_by_primary_title(title).fetchall()
+        assert movies and all(title == movie['primaryTitle'].upper() for movie in movies)
+
+    def test_get_movies_by_original_title(self, movies_table: MoviesTable):
+        title = 'STAR WARS'
+        movies = movies_table.get_movies_by_original_title(title).fetchall()
+        assert movies and all(title == movie['originalTitle'].upper() for movie in movies)
+
+    def test_get_movies_like_primary_title(self, movies_table: MoviesTable):
+        title = 'ROCKY'
+        movies = movies_table.get_movies_like_primary_title(title).fetchall()
+        assert movies and all(title in movie['primaryTitle'].upper() for movie in movies)
+
+    def test_get_movies_like_original_title(self, movies_table: MoviesTable):
+        title = 'TERMINATOR'
+        movies = movies_table.get_movies_like_original_title(title).fetchall()
+        assert movies and all(title in movie['originalTitle'].upper() for movie in movies)

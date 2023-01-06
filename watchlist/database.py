@@ -36,3 +36,25 @@ class MoviesTable:
                                       {'ID': ID})
 
         return res.fetchone()
+
+
+    def get_movies_by_primary_title(self, title: str):
+        res = self.connection.execute("""SELECT * FROM Movies WHERE primaryTitle LIKE ?""",
+                                      (title,))
+        return res
+
+    def get_movies_by_original_title(self, title: str):
+        res = self.connection.execute("""SELECT * FROM Movies WHERE originalTitle LIKE ?""",
+                                      (title,))
+        return res
+
+
+    def get_movies_like_primary_title(self, title: str) -> sql3.Cursor:
+        res = self.connection.execute("""SELECT * FROM Movies WHERE primaryTitle LIKE ?""",
+                                      (f'%{title}%',))
+        return res
+
+    def get_movies_like_original_title(self, title: str) -> sql3.Cursor:
+        res = self.connection.execute("""SELECT * FROM Movies WHERE originalTitle LIKE ?""",
+                                      (f'%{title}%',))
+        return res
