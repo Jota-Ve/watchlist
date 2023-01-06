@@ -4,7 +4,7 @@ import pytest
 
 from watchlist.database import MoviesTable
 
-DATABASE_PATH = 'database\watchlist.db'
+DATABASE_PATH = r'database\watchlist.db'
 
 class TestMoviesTable:
     @pytest.fixture(scope='class')
@@ -34,7 +34,7 @@ class TestMoviesTable:
         temp_movies_table.connect(DATABASE_PATH)
 
         movie = temp_movies_table.get_movie_by_ID('tt0133093')
-        assert movie['primaryTitle'] == 'The Matrix'
+        assert movie and movie['primaryTitle'] == 'The Matrix'
 
 
     def test_property_is_closed_while_connection_open(self, temp_movies_table: MoviesTable):
@@ -47,7 +47,7 @@ class TestMoviesTable:
 
     def test_get_movie_by_ID(self, movies_table: MoviesTable):
         movie = movies_table.get_movie_by_ID('tt0133093')
-        assert movie['primaryTitle'] == 'The Matrix'
+        assert movie and movie['primaryTitle'] == 'The Matrix'
 
     def test_get_movie_by_ID_inexistent(self, movies_table: MoviesTable):
         movie = movies_table.get_movie_by_ID('000000000')
