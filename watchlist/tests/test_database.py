@@ -83,3 +83,14 @@ class TestMoviesTable:
     def test_get_movies_by_runtime_minutes(self, movies_table: MoviesTable):
         movies = movies_table.get_movies_by_runtime(120).fetchall()
         assert movies and all(movie['runtimeMinutes'] == 120 for movie in movies)
+
+
+    def test_get_movies_by_genre(self, movies_table: MoviesTable):
+        genre = 'ACTION'
+        movies = movies_table.get_movies_by_genre(genre).fetchall()
+        assert movies and all(genre in movie['genres'].upper() for movie in movies)
+
+    def test_get_movies_by_genre_inexistent(self, movies_table: MoviesTable):
+        genre = 'FAKE_GENRE'
+        movies = movies_table.get_movies_by_genre(genre).fetchall()
+        assert movies == []

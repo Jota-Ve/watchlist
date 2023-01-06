@@ -70,3 +70,9 @@ class MoviesTable:
         res = self.connection.execute("""SELECT * FROM Movies WHERE runtimeMinutes=?""",
                                       (minutes, ))
         return res
+
+
+    def get_movies_by_genre(self, genre: str) -> sql3.Cursor:
+        res = self.connection.execute("""SELECT * FROM Movies WHERE genres LIKE ?""",
+                                      (f'%{genre}%', ))
+        return res
