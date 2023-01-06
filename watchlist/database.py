@@ -64,3 +64,9 @@ class MoviesTable:
         res = self.connection.execute("""SELECT * FROM Movies WHERE yearRelease=?""",
                                       (year, ))
         return res
+
+
+    def get_movies_by_runtime(self, minutes: int) -> sql3.Cursor:
+        res = self.connection.execute("""SELECT * FROM Movies WHERE runtimeMinutes=?""",
+                                      (minutes, ))
+        return res

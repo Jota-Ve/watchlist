@@ -78,3 +78,8 @@ class TestMoviesTable:
     def test_get_movies_by_year_release(self, movies_table: MoviesTable):
         movies = movies_table.get_movies_by_year_release(1999).fetchall()
         assert movies and all(movie['yearRelease'] == 1999 for movie in movies)
+
+
+    def test_get_movies_by_runtime_minutes(self, movies_table: MoviesTable):
+        movies = movies_table.get_movies_by_runtime(120).fetchall()
+        assert movies and all(movie['runtimeMinutes'] == 120 for movie in movies)
