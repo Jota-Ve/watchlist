@@ -54,6 +54,7 @@ class TestMoviesTable:
         temp_movies_table.close()
         assert temp_movies_table.is_closed == True
 
+
     #region Test Get Methods
     def test_get_movie_by_ID(self, movies_table: MoviesTable):
         movie = movies_table.get_movie_by_ID('tt0133093')
@@ -104,3 +105,26 @@ class TestMoviesTable:
         genre = 'FAKE_GENRE'
         movies = movies_table.get_movies_by_genre(genre).fetchall()
         assert movies == []
+
+    #endregion Test Get Methods
+
+
+    def test_adding_new_movie_tuple(self, temp_movies_table: MoviesTable):
+        # ('movieID', 'primaryTitle', 'originalTitle', 'yearRelease', 'runtimeMinutes', 'genres')
+        new_movie = ('Fast and Furious 99', 'Fast and Furious 99', 2150, 120, 'Action')
+        movie_id = temp_movies_table.add_movie(new_movie)
+        assert ((movie_id,) + new_movie) == temp_movies_table.get_movie_by_ID(movie_id)
+
+    def test_adding_new_movie_dict(self, temp_movies_table: MoviesTable):
+        # ('movieID', 'primaryTitle', 'originalTitle', 'yearRelease', 'runtimeMinutes', 'genres')
+        new_movie = {'primaryTitle': 'Fast and Furious 99',
+                     'originalTitle': 'Fast and Furious 99',
+                     'yearRelease': 2150,
+                     'runtimeMinutes': 120,
+                     'genres': 'Action'}
+
+        movie_id = temp_movies_table.add_movie(new_movie)
+        returned_movie = dict(temp_movies_table.get_movie_by_ID(movie_id))
+        returned_movie.pop('movieID')
+
+        assert new_movie == returned_movie

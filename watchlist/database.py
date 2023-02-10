@@ -1,4 +1,5 @@
 import sqlite3 as sql3
+from typing import Any
 
 
 class MoviesTable:
@@ -41,11 +42,15 @@ class MoviesTable:
             self.__is_closed = False
 
 
+    def save(self):
+        self._connection.commit()
+
+
     def close(self):
         self._connection.close()
         self.__is_closed = True
 
-
+    #region GET METHODS
     def get_movie_by_ID(self, ID: str) -> sql3.Row|None:
         res = self._connection.execute("""SELECT * FROM Movies WHERE movieID=:ID""",
                                       {'ID': ID})
@@ -91,3 +96,46 @@ class MoviesTable:
         res = self._connection.execute("""SELECT * FROM Movies WHERE genres LIKE ?""",
                                       (f'%{genre}%', ))
         return res
+
+    #endregion GET METHODS
+
+
+    def _add_movie_dict(self, id_: str, movie: dict[str, Any]):
+        SQL = """INSERT INTO Movies
+                (movieID, primaryTitle, originalTitle, yearRelease, runtimeMinutes, genres)
+                VALUES (:movieID, :primaryTitle, :originalTitle, :yearRelease, :runtimeMinutes, :genres)"""
+
+        parameters = movie | {'movieID': id_}
+        self._connection.execute(SQL, parameters)
+
+
+    def _add_movie_tuple(self, id_, movie: tuple):
+        SQL = """INSERT INTO Movies
+                (movieID, primaryTitle, originalTitle, yearRelease, runtimeMinutes, genres)
+                VALUES (?, ?, ?, ?, ?, ?)"""
+
+        parameters = (id_,) + movie
+        self._connection.execute(SQL, parameters)
+
+
+    def add_movie(self, movie: tuple|dict) -> str:
+        res = self._connection.execute("SELECT MAX(movieID) FROM Movies")
+        last_id: str|None = res.fetchone()[0]
+
+        if last_id is not None:
+            new_id_number = int(last_id[2:]) + 1
+
+        else: # Se o último id for None, a tabela está vazia
+            res = self._connection.execute("SELECT COUNT(*) FROM Movies")
+            assert res.fetchone()[0] == 0, ("A tabela possui registros, mas não "
+                                            "foi possível localizar o último id.")
+            new_id_number = 0
+
+        new_id = f'tt{new_id_number:07}'
+        if isinstance(movie, tuple):
+            self._add_movie_tuple(new_id, movie)
+        else:
+            self._add_movie_dict(new_id, movie)
+
+
+        return new_id
