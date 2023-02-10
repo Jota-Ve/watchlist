@@ -18,9 +18,19 @@ class TestMoviesTable:
     @pytest.fixture(scope='function')
     def temp_movies_table(self):
         """Nova instância para cada função"""
-        table = MoviesTable(DATABASE_PATH)
+        table = MoviesTable(':memory:')
+        table._create_table()
         yield table
         table.close()
+
+
+    def test_creating_table(self):
+        table = MoviesTable(':memory:')
+        table._create_table()
+        SQL = """SELECT name FROM sqlite_master WHERE type='table' AND name='Movies'"""
+
+        assert table._connection.execute(SQL).fetchone()
+
 
 
     def test_closing_connection(self, temp_movies_table: MoviesTable):
@@ -44,7 +54,7 @@ class TestMoviesTable:
         temp_movies_table.close()
         assert temp_movies_table.is_closed == True
 
-
+    #region Test Get Methods
     def test_get_movie_by_ID(self, movies_table: MoviesTable):
         movie = movies_table.get_movie_by_ID('tt0133093')
         assert movie and movie['primaryTitle'] == 'The Matrix'
