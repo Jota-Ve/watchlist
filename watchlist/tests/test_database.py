@@ -24,6 +24,13 @@ class TestMoviesTable:
         table.close()
 
 
+    @pytest.fixture()
+    def action_movie(self):
+        # ('movieID', 'primaryTitle', 'originalTitle', 'yearRelease', 'runtimeMinutes', 'genres')
+        return ('Action Movie', 'Action Movie', 2000, 120, 'Action')
+
+
+
     def test_creating_table(self):
         table = MoviesTable(':memory:')
         table._create_table()
@@ -113,7 +120,19 @@ class TestMoviesTable:
         # ('movieID', 'primaryTitle', 'originalTitle', 'yearRelease', 'runtimeMinutes', 'genres')
         new_movie = ('Fast and Furious 99', 'Fast and Furious 99', 2150, 120, 'Action')
         movie_id = temp_movies_table.add_movie(new_movie)
-        assert ((movie_id,) + new_movie) == temp_movies_table.get_movie_by_ID(movie_id)
+        returned_movie = temp_movies_table.get_movie_by_ID(movie_id)
+        assert ((movie_id,) + new_movie) == tuple(returned_movie)
+
+
+    def test_adding_new_movie_without_saving(self, temp_movies_table: MoviesTable, action_movie: tuple):
+        temp_movies_table.add_movie(action_movie)
+        assert temp_movies_table._connection.in_transaction
+
+    def test_adding_new_movie_and_saving_changes(self, temp_movies_table: MoviesTable, action_movie: tuple):
+        temp_movies_table.add_movie(action_movie)
+        temp_movies_table.save_changes()
+        assert not temp_movies_table._connection.in_transaction
+
 
     def test_adding_new_movie_dict(self, temp_movies_table: MoviesTable):
         # ('movieID', 'primaryTitle', 'originalTitle', 'yearRelease', 'runtimeMinutes', 'genres')

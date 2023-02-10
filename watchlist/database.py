@@ -42,7 +42,7 @@ class MoviesTable:
             self.__is_closed = False
 
 
-    def save(self):
+    def save_changes(self):
         self._connection.commit()
 
 
@@ -119,6 +119,7 @@ class MoviesTable:
 
 
     def add_movie(self, movie: tuple|dict) -> str:
+        # Seleciona o "maior/último" id da tabela
         res = self._connection.execute("SELECT MAX(movieID) FROM Movies")
         last_id: str|None = res.fetchone()[0]
 
@@ -136,6 +137,5 @@ class MoviesTable:
             self._add_movie_tuple(new_id, movie)
         else:
             self._add_movie_dict(new_id, movie)
-
 
         return new_id
