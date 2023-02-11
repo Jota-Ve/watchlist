@@ -38,7 +38,7 @@ class TestMoviesTable:
             ("tt0035933", "Elephant Fury", "Gesprengte Gitter", 1953, 100, "Drama,War")
         ]
 
-        for values in data:
+        for values in data[1:]:
             table._connection.execute("INSERT INTO Movies VALUES (?,?,?,?,?,?)",
                                       values)
 
@@ -86,6 +86,11 @@ class TestMoviesTable:
 
 
     #region Test Get Methods ###############################################
+    def test_get_movies(self, movies_table: MoviesTable):
+        res = movies_table.get_movies()
+        assert sum(1 for _ in res) == movies_table._connection.execute("SELECT COUNT(*) FROM Movies").fetchone()[0]
+
+
     def test_get_movie_by_ID(self, movies_table: MoviesTable):
         movie = movies_table.get_movie_by_ID('tt0133093')
         assert movie and movie['primaryTitle'] == 'The Matrix'
@@ -175,5 +180,5 @@ class TestMoviesTable:
 
 
 
-    # def test_alter_original_title(self, temp_movies_table: MoviesTable):
-    #     temp_movies_table.get_mo
+    def test_alter_primary_title(self, temp_movies_table: MoviesTable):
+        temp_movies_table.get_mo

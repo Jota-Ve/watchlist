@@ -51,6 +51,10 @@ class MoviesTable:
         self.__is_closed = True
 
     #region GET METHODS
+    def get_movies(self) -> sql3.Cursor:
+        return self._connection.execute("SELECT * FROM Movies")
+
+
     def get_movie_by_ID(self, ID: str) -> sql3.Row|None:
         res = self._connection.execute("""SELECT * FROM Movies WHERE movieID=:ID""",
                                       {'ID': ID})
