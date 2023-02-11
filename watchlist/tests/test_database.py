@@ -5,6 +5,7 @@ import pytest
 from watchlist.database import MoviesTable
 
 DATABASE_PATH = r'database\watchlist.db'
+DATABASE_MOVIES_BKP_PATH = r'data\Movies-bkp.csv'
 
 class TestMoviesTable:
     @pytest.fixture(scope='class')
@@ -20,6 +21,28 @@ class TestMoviesTable:
         """Nova instância para cada função"""
         table = MoviesTable(':memory:')
         table._create_table()
+
+        data = [
+            ("movieID",	"primaryTitle",	"originalTitle",	"yearRelease",	"runtimeMinutes",	"genres"),
+            ("tt0015724", "Dama de noche", "Dama de noche", 1993, 102, "Drama,Mystery,Romance"),
+            ("tt0021617", "Arizona Territory", "Arizona Territory", 1950, 56, "Western"),
+            ("tt0022064", "Lebbra bianca", "Lebbra bianca", 1951, 100, "Drama"),
+            ("tt0025557", "El negro que tenía el alma blanca", "El negro que tenía el alma blanca", 1951, 87, "Drama,Musical"),
+            ("tt0030998", "You're Only Young Twice", "You're Only Young Twice", 1952, 81, "Comedy"),
+            ("tt0031458", "El huésped del sevillano", "El huésped del sevillano", 1970, 86, "Comedy"),
+            ("tt0031603", "Made in Germany - Die dramatische Geschichte des Hauses Zeiss", "Made in Germany", 1957, 101, "Biography,Drama"),
+            ("tt0032787", "Mi noche triste", "Mi noche triste", 1952, 92, "Drama,Musical"),
+            ("tt0034683", "Dramma sul Tevere", "Dramma sul Tevere", 1952, 88, "Drama"),
+            ("tt0035423", "Kate & Leopold", "Kate & Leopold", 2001, 118, "Comedy,Fantasy,Romance"),
+            ("tt0035822", "Dora la espía", "Dora la espía", 1950, 99, "Drama"),
+            ("tt0035933", "Elephant Fury", "Gesprengte Gitter", 1953, 100, "Drama,War")
+        ]
+
+        for values in data:
+            table._connection.execute("INSERT INTO Movies VALUES (?,?,?,?,?,?)",
+                                      values)
+
+        table._connection.commit()
         yield table
         table.close()
 
@@ -62,7 +85,7 @@ class TestMoviesTable:
         assert temp_movies_table.is_closed == True
 
 
-    #region Test Get Methods
+    #region Test Get Methods ###############################################
     def test_get_movie_by_ID(self, movies_table: MoviesTable):
         movie = movies_table.get_movie_by_ID('tt0133093')
         assert movie and movie['primaryTitle'] == 'The Matrix'
@@ -115,7 +138,7 @@ class TestMoviesTable:
 
     #endregion Test Get Methods
 
-
+    #region Test add_movie ###############################################
     def test_adding_new_movie_tuple(self, temp_movies_table: MoviesTable):
         # ('movieID', 'primaryTitle', 'originalTitle', 'yearRelease', 'runtimeMinutes', 'genres')
         new_movie = ('Fast and Furious 99', 'Fast and Furious 99', 2150, 120, 'Action')
@@ -147,3 +170,10 @@ class TestMoviesTable:
         returned_movie.pop('movieID')
 
         assert new_movie == returned_movie
+
+    #endregion add_movie
+
+
+
+    # def test_alter_original_title(self, temp_movies_table: MoviesTable):
+    #     temp_movies_table.get_mo
